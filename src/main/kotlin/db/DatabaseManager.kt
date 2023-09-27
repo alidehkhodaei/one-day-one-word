@@ -1,20 +1,15 @@
 package db
 
 import constant.LINK_MORE_DETAILS
-import java.sql.DriverManager
+import java.sql.Connection
 
 /**
- * Object responsible for fetching random words from a database.
+ * DatabaseManager is responsible for managing interactions with a database connection.
+ * It provides methods for querying and retrieving data from the connected database.
+ *
+ * @property connection The database connection to be used for executing queries.
  */
-object RandomWordFetcher {
-
-    // JDBC URL for the H2 database
-    private const val JDBC_URL = "jdbc:h2:./src/main/resources/words"
-
-    // Lazy initialization of the database connection
-    private val connection by lazy {
-        DriverManager.getConnection(JDBC_URL, "root", "")
-    }
+class DatabaseManager(private val connection:Connection) {
 
     /**
      * Fetches a random word and its meaning from the database.
@@ -36,5 +31,4 @@ object RandomWordFetcher {
         }
     }
 }
-
 

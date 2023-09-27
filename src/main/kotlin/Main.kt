@@ -1,7 +1,14 @@
 import api.ApiClient
 import api.HttpRequest
-import db.RandomWordFetcher.fetchRandomWordFromDatabase
+import constant.JDBC_URL
+import db.DatabaseManager
 import java.net.http.HttpClient
+import java.sql.DriverManager
+
+// Lazy initialization of the database connection
+private val connection by lazy {
+    DriverManager.getConnection(JDBC_URL, "root", "")
+}
 
 fun main(args: Array<String>) {
 
@@ -14,7 +21,8 @@ fun main(args: Array<String>) {
     val api = ApiClient(httpRequest)
 
     // Fetch data from database
-    val data = fetchRandomWordFromDatabase()
+    val databaseManager = DatabaseManager(connection)
+    val data = databaseManager.fetchRandomWordFromDatabase()
 
     // Call api
     api.sendToChannel(data!!, token)
