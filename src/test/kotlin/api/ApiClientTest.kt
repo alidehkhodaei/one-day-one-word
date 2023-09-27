@@ -1,21 +1,20 @@
-import api.ApiClient
+package api
+
 import constant.*
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.json.JSONObject
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.*
-import org.mockito.ArgumentMatchers.eq
-import org.mockito.Mockito.*
+import org.mockito.ArgumentMatchers.any
 import org.mockito.junit.jupiter.MockitoExtension
 import java.net.http.HttpClient
-import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.ArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Flow
-import org.json.JSONObject
-import org.junit.jupiter.api.BeforeEach
 
 @ExtendWith(MockitoExtension::class)
 class ApiClientTest {
@@ -29,7 +28,7 @@ class ApiClientTest {
     private lateinit var mockResponse: HttpResponse<String>
 
     @Captor
-    private lateinit var captor: ArgumentCaptor<HttpRequest>
+    private lateinit var captor: ArgumentCaptor<java.net.http.HttpRequest>
 
     @Mock
     private lateinit var mockClient: HttpClient
@@ -38,13 +37,13 @@ class ApiClientTest {
 
     @BeforeEach
     fun setUp() {
-        val httpRequest = api.HttpRequest(mockClient)
+        val httpRequest = HttpRequest(mockClient)
         apiClient = ApiClient(httpRequest)
 
-        `when`(mockClient.send(any(), eq(HttpResponse.BodyHandlers.ofString())))
+        Mockito.`when`(mockClient.send(any(), ArgumentMatchers.eq(HttpResponse.BodyHandlers.ofString())))
             .thenReturn(mockResponse)
 
-        `when`(mockResponse.body()).thenReturn("{\"ok\":true")
+        Mockito.`when`(mockResponse.body()).thenReturn("{\"ok\":true")
 
         apiClient.sendToChannel("Test data", token)
     }
@@ -60,39 +59,39 @@ class ApiClientTest {
 
         val capturedRequest = verifyAndCaptureHttpResponse()
 
-        assertEquals(expectedRequestBody, capturedRequest.extractActualRequestBody())
+        Assertions.assertEquals(expectedRequestBody, capturedRequest.extractActualRequestBody())
     }
 
     @Test
     fun `test Request Url`() {
         val capturedRequest = verifyAndCaptureHttpResponse()
         val expectedUrl = "${TELEGRAM_API_BASE_URL}bot$token/$SEND_MESSAGE_URL"
-        assertEquals(expectedUrl, capturedRequest.uri().toString())
+        Assertions.assertEquals(expectedUrl, capturedRequest.uri().toString())
     }
 
     @Test
     fun `test Request Method`() {
         val capturedRequest = verifyAndCaptureHttpResponse()
-        assertEquals(POST_REQUEST, capturedRequest.method())
+        Assertions.assertEquals(POST_REQUEST, capturedRequest.method())
     }
 
     @Test
     fun `test Request Headers`() {
         val capturedRequest = verifyAndCaptureHttpResponse()
-        assertEquals(JSON_CONTENT_TYPE, capturedRequest.headers().firstValue(ACCEPT_HEADER).orElse(null))
-        assertEquals(JSON_CONTENT_TYPE, capturedRequest.headers().firstValue(CONTENT_TYPE).orElse(null))
+        Assertions.assertEquals(JSON_CONTENT_TYPE, capturedRequest.headers().firstValue(ACCEPT_HEADER).orElse(null))
+        Assertions.assertEquals(JSON_CONTENT_TYPE, capturedRequest.headers().firstValue(CONTENT_TYPE).orElse(null))
     }
 
     @Test
     fun `test Response Body`() =
-        assertEquals("{\"ok\":true", mockResponse.body())
+        Assertions.assertEquals("{\"ok\":true", mockResponse.body())
 
-    private fun verifyAndCaptureHttpResponse(): HttpRequest {
-        verify(mockClient).send(captor.capture(), eq(HttpResponse.BodyHandlers.ofString()))
+    private fun verifyAndCaptureHttpResponse(): java.net.http.HttpRequest {
+        Mockito.verify(mockClient).send(captor.capture(), ArgumentMatchers.eq(HttpResponse.BodyHandlers.ofString()))
         return captor.value
     }
 
-    private fun HttpRequest.extractActualRequestBody(): Map<String, Any> {
+    private fun java.net.http.HttpRequest.extractActualRequestBody(): Map<String, Any> {
         val body = this.bodyPublisher().get()
         val flowSubscriber: FlowSubscriber<ByteBuffer> = FlowSubscriber()
         body.subscribe(flowSubscriber)
