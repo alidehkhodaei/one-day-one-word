@@ -3,8 +3,8 @@
 ## Overview
 This Bot is a simple bot designed to send an English word to a specified channel every day. This bot is a fun and educational way to expand your vocabulary and engage with your audience or community members.
 
-> [!NOTE]  
-> I got the words from the website <a href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000">`Oxford Learner's Dictionaries`</a> and their meanings from `Google Translate`.
+> [!NOTE]
+> I got the words from the <a href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000">`Oxford Learner's Dictionaries`</a> website and their meanings from `Google Translate`, so there might be some spelling mistakes.
 
 ## Running the Project
 ```gradle
