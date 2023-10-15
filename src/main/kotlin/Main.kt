@@ -5,11 +5,6 @@ import db.DatabaseManager
 import java.net.http.HttpClient
 import java.sql.DriverManager
 
-// Lazy initialization of the database connection
-private val connection by lazy {
-    DriverManager.getConnection(JDBC_URL, "root", "")
-}
-
 fun main(args: Array<String>) {
 
     // Get bot token
@@ -21,6 +16,7 @@ fun main(args: Array<String>) {
     val api = ApiClient(httpRequest)
 
     // Fetch data from database
+    val connection = DriverManager.getConnection(JDBC_URL, "root", "")
     val databaseManager = DatabaseManager(connection)
     val data = databaseManager.fetchRandomWordFromDatabase()
 
