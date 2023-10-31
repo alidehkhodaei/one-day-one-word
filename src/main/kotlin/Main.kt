@@ -19,8 +19,10 @@ fun main(args: Array<String>) {
     val connection = DriverManager.getConnection(JDBC_URL, "root", "")
     val databaseManager = DatabaseManager(connection)
     val data = databaseManager.fetchRandomWordFromDatabase()
+    println(data)
 
     // Call api
-    api.sendToChannel(data!!, token)
+    val response=api.sendToChannel(data!!, token)
 
+    println(response)
 }
